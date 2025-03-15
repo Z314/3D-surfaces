@@ -1,0 +1,65 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+from mpl_toolkits.mplot3d import Axes3D
+
+# Desired pixel dimensions
+width_px = 1400
+height_px = 1000
+dpi = 100  # Dots per inch
+
+# Convert pixels to inches
+fig_width = width_px / dpi
+fig_height = height_px / dpi
+
+# Mobius Strip Surface
+# Define the grid
+u = np.linspace(0, 2 * np.pi, 100)
+v = np.linspace(-0.5, 0.5, 50)
+u, v = np.meshgrid(u, v)
+x = (1 + v * np.cos(u / 2)) * np.cos(u)
+y = (1 + v * np.cos(u / 2)) * np.sin(u)
+z = v * np.sin(u / 2)
+
+# Create the plot
+fig = plt.figure(figsize=(fig_width, fig_height), dpi=dpi)
+ax = fig.add_subplot(111, projection='3d')
+
+# Plot the surface
+surface = ax.plot_surface(x, y, z, cmap='viridis', edgecolor='k', alpha=0.8)
+
+# Customize the plot
+ax.set_title("Mobius Strip Surface", fontsize=16)
+ax.set_xlabel("X-axis", fontsize=12)
+ax.set_ylabel("Y-axis", fontsize=12)
+ax.set_zlabel("Z-axis", fontsize=12)
+
+# Add a color bar
+fig.colorbar(surface, ax=ax, shrink=0.5, aspect=10)
+
+# Save the figure as a PNG
+plt.savefig("Mobius-Strip_surface.png", dpi=300, bbox_inches='tight')  # Adjust dpi for higher resolution
+
+# Save the figure as SVG
+plt.savefig("Mobius-Strip_surface.svg", bbox_inches='tight')
+
+# Function to update the view for each frame
+def update(frame):
+    ax.cla()  # Clear the current plot
+    surface = ax.plot_surface(x, y, z, cmap='viridis', edgecolor='k', alpha=0.8)
+    ax.set_title("Torus", fontsize=16)
+    ax.set_xlabel("X-axis", fontsize=12)
+    ax.set_ylabel("Y-axis", fontsize=12)
+    ax.set_zlabel("Z-axis", fontsize=12)
+    ax.view_init(elev=30, azim=frame)  # Rotate the view
+    return surface,
+
+# Generate the animation
+frames = 360  # Number of frames (rotation steps)
+ani = FuncAnimation(fig, update, frames=frames, interval=50, blit=False)
+
+# Save as an animated GIF
+ani.save("mobius_animated.gif", writer="pillow", dpi=dpi, fps=20)
+
+# Show the plot
+plt.show()
